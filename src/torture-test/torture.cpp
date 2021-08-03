@@ -4,8 +4,8 @@ int tickpin = 25;
 
 void forward_tick() {
   for (int i=0; i<32; i++) {
-    digitalWrite(tickpin, HIGH); delay(9);
-    digitalWrite(tickpin, LOW); delay(1);
+    digitalWrite(tickpin, HIGH); delayMicroseconds(900);
+    digitalWrite(tickpin, LOW); delayMicroseconds(100);
   }
 	tickpin = (tickpin == 25 ? 27 : 25);
   delay(125-32);
