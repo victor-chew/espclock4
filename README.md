@@ -74,7 +74,7 @@ If the battery is simply low (4.2V for 4xAA battery, 3.1V for 18650 battery), it
 
 When the battery is removed to change to a fresh set, the supercapacitor will have enough juice to power the ULP for about 5 to 6 minutes before clock time is lost. So any change of batteries have to be performed within that time interval.
 
-###Router Offline
+### Router Offline
 If the router is down, or the ESP32 is unable to connect to the router for whatever reason, it will wait for the next opportunity to do so i.e. wait for another 2 hours.
 
 Note that if the ESP32 is unable to connect to the Internet for an extended period of time, the clock will drift noticeably due to the 5% RTC clock error. However, this will be fixed once the ESP32 is able to get online again.
