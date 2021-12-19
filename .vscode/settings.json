@@ -1,0 +1,16 @@
+{
+  "files.associations": {
+    "*.tcc": "cpp",
+    "istream": "cpp",
+    "stdexcept": "cpp",
+    "regex": "cpp",
+    "array": "cpp",
+    "bitset": "cpp",
+    "deque": "cpp",
+    "map": "cpp",
+    "string": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "vector": "cpp"
+  }
+}
