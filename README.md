@@ -40,7 +40,7 @@ Two clocks have been made so far.
 ![30cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-front.jpg)
 ![30cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-back.jpg)
 
-### Usage
+### Configuration
 The user interface has not changed much from previous versions. 
 
 When the clock is first started, the built-in LED turns on to indicate that it is ready to be configured. Configuration is done via a captive WiFi portal spun up by the ESP32. Connecting to the captive portal will bring up the web browser with the following configuration page:
@@ -54,6 +54,20 @@ The timezone is prefilled with information obtained from your web browser. Howev
 The last field lets you enter the URL from which network time is obtained. By default, it is [http://espclock.randseq.org/now.php](http://espclock.randseq.org/now.php), though this is a very simple script that you can host on your own server.
 
 Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the actual time. After that, it simply behaves like a normal clock and will adjust to daylight saving automatically.
+
+### Factory Reset
+A click of the pushbutton will pause the clock, and another click will restart it. Pausing the clock will also save the current clock time to flash storage.
+
+A long press of the pushbutton after about 10 seconds will factory reset the clock and bring up the captive portal again for configuration.
+
+*Note: That is a minor deviation from previous versions where a click of the pushbutton will reboot the MCU, and a long press will perform a factory reset.*
+
+### Battery change
+When the battery runs low, or it is removed altogether, the clock will pause (but not save the current clock time to flash storage, because there might not be enough power to do so). The ULP code is still running, but it is not doing much else other than waiting for the supply voltage to be restored to working level.
+
+If the battery is simply low (4.2V for 4xAA battery, 3.1V for 18650 battery), it will have ample reserve to keep the ULP running for many days, so clock time will not be lost.
+
+When the battery is removed to change to a fresh set, the supercapacitor will have enough juice to power the ULP for about 5 to 6 minutes before clock time is lost. So any change of batteries have to be performed within that time interval.
 
 ### Stress test
 Uncomment `STRESS_TEST` to activate the stress test code.
