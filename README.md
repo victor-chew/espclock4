@@ -49,7 +49,7 @@ When the clock is first started, the built-in LED turns on to indicate that it i
 
 Select your WiFi router and enter the router password. 
 
-The time on the clock face should be entered in HHMMSS format eg. "120000", although if SS is not entered, 00 is assumed eg. "1200".
+The time on the clock face should be entered in `HHMMSS` format eg. "120000", although if SS is not entered, 00 is assumed eg. "1200".
 
 The timezone is prefilled with information obtained from your web browser. However if the prefill is wrong, you can always enter the correct value by consulting [this list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
