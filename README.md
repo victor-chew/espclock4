@@ -49,16 +49,16 @@ When the clock is first started, the built-in LED turns on to indicate that it i
 
 Select your WiFi router and enter the router password. 
 
-The time on the clock face should be entered in `HHMMSS` format eg. "120000", although if SS is not entered, 00 is assumed eg. "1200".
+The time on the clock face should be entered in `HHMMSS` format eg. `120000`. If SS is not entered, 00 is assumed eg. `1200`.
 
 The timezone is prefilled with information obtained from your web browser. However if the prefill is wrong, you can always enter the correct value by consulting [this list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
-The last field lets you enter the URL from which network time is obtained. By default, it is [http://espclock.randseq.org/now.php](http://espclock.randseq.org/now.php), though you can change that to point to another URL hosted on your own server.
+The last field lets you enter the URL from which network time is obtained. By default, it is [http://espclock.randseq.org/now.php](http://espclock.randseq.org/now.php), though you can change that to point to another URL hosted by your own server.
 
 Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the network time. After that, it simply behaves like a normal clock but will adjust to daylight saving automatically.
 
 ### ULP Timer Calibration
-As mentioned previously, the ULP timer is not very accurate and has a 5% drift. Hence the clock calibrates the timer every 2 hours based on the current clock and network time.
+As mentioned previously, the ULP timer is not very accurate and has a 5% drift. Hence the clock calibrates the timer every 2 hours based on the difference between current clock and network time.
 
 However, when it first starts running, it will perform this calibration after 5, 15, 30 and 60 minutes. This is to quickly arrive at a suitable value for the timer instead of waiting for the full 2 hours.
 
