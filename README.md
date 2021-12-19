@@ -43,17 +43,19 @@ Two clocks have been made so far.
 ### Configuration
 The user interface has not changed much from previous versions. 
 
-When the clock is first started, the built-in LED turns on to indicate that it is ready to be configured. Configuration is done via a captive WiFi portal spun up by the ESP32. Connecting to the captive portal will bring up the web browser with the following configuration page:
+When the clock is first started, the built-in LED turns on to indicate that it is ready to be configured. Configuration is done via a captive WiFi portal spun up by the ESP32. Connecting to the captive portal brings up the web browser with the following configuration page:
 
 ![ESPClock4 configuration page](https://github.com/victor-chew/espclock4/raw/main/images/configuration.png)
 
-Select your WiFi router and enter the router password. The time on the clock face should be entered in HHMMSS format eg. "120000", although if SS is not entered, 00 is assumed eg. "1200".
+Select your WiFi router and enter the router password. 
+
+The time on the clock face should be entered in HHMMSS format eg. "120000", although if SS is not entered, 00 is assumed eg. "1200".
 
 The timezone is prefilled with information obtained from your web browser. However if the prefill is wrong, you can always enter the correct value by consulting [this list](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
-The last field lets you enter the URL from which network time is obtained. By default, it is [http://espclock.randseq.org/now.php](http://espclock.randseq.org/now.php), though this is a very simple script that you can host on your own server.
+The last field lets you enter the URL from which network time is obtained. By default, it is [http://espclock.randseq.org/now.php](http://espclock.randseq.org/now.php), though you can change that to point to another URL hosted on your own server.
 
-Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the actual time. After that, it simply behaves like a normal clock and will adjust to daylight saving automatically.
+Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the network time. After that, it simply behaves like a normal clock but will adjust to daylight saving automatically.
 
 ### ULP Timer Calibration
 As mentioned previously, the ULP timer is not very accurate and has a 5% drift. Hence the clock calibrates the timer every 2 hours based on the current clock and network time.
