@@ -18,7 +18,7 @@ The advantages of this approach are as follows:
 	- 1 x pushbutton
 	- 2 x resistors to form a divider to measure the input voltage
 
-- Similar or better power efficiency as V3. A set of 4 x 1.2V AA NiMH rechargables will drive the clock for at least 4 months.
+- Similar or better power efficiency compared to V3. A set of 4 x 1.2V AA NiMH rechargables will drive the clock for at least 4 months.
 
 - More stable than V2/V3, where the ESP8266 and ATtiny85 do not share a common ground (but are connected through the I2C bus). This leads to ESP8266 sometimes not restarting cleanly when power is removed/reconnected.
 
