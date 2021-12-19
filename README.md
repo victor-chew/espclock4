@@ -55,6 +55,11 @@ The last field lets you enter the URL from which network time is obtained. By de
 
 Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the actual time. After that, it simply behaves like a normal clock and will adjust to daylight saving automatically.
 
+### ULP Timer Calibration
+As mentioned previously, the ULP timer is not very accurate and has a 5% drift. Hence the clock calibrates the timer every 2 hours based on the current clock and network time.
+
+However, when it first starts running, it will perform this calibration after 5, 15, 30 and 60 minutes. This is to quickly arrive at a suitable value for the timer instead of waiting for the full 2 hours.
+
 ### Factory Reset
 A click of the pushbutton will pause the clock, and another click will restart it. Pausing the clock will also save the current clock time to flash storage.
 
@@ -68,6 +73,11 @@ When the battery runs low, or it is removed altogether, the clock will pause (bu
 If the battery is simply low (4.2V for 4xAA battery, 3.1V for 18650 battery), it will have ample reserve to keep the ULP running for many days, so clock time will not be lost.
 
 When the battery is removed to change to a fresh set, the supercapacitor will have enough juice to power the ULP for about 5 to 6 minutes before clock time is lost. So any change of batteries have to be performed within that time interval.
+
+###Router Offline
+If the router is down, or the ESP32 is unable to connect to the router for whatever reason, it will wait for the next opportunity to do so i.e. wait for another 2 hours.
+
+Note that if the ESP32 is unable to connect to the Internet for an extended period of time, the clock will drift noticeably due to the 5% RTC clock error. However, this will be fixed once the ESP32 is able to get online again.
 
 ### Stress test
 Uncomment `STRESS_TEST` to activate the stress test code.
