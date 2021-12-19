@@ -30,12 +30,12 @@ The advantages of this approach are as follows:
 ### Makes
 Two clocks have been made so far.
 
-- 20cm clock ($2):
+- **20cm clock ($2)**:
 
 ![20cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-20cm-front.jpg)
 ![20cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-20cm-back.jpg)
 
-- 30cm clock ($2):
+- **30cm clock ($2)**:
 
 ![30cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-front.jpg)
 ![30cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-back.jpg)
@@ -77,7 +77,7 @@ When the battery is removed to change to a fresh set, the supercapacitor will ha
 ### Router Offline
 If the router is down, or the ESP32 is unable to connect to the router for whatever reason, it will wait for the next opportunity to do so i.e. wait for another 2 hours.
 
-Note that if the ESP32 is unable to connect to the Internet for an extended period of time, the clock will drift noticeably due to the 5% RTC clock error. However, this will be fixed once the ESP32 is able to get online again.
+Note that if the ESP32 is unable to connect to the Internet for an extended period of time, the clock will drift noticeably due to the 5% RTC clock error. However, this will be fixed automatically once the ESP32 is able to get online again.
 
 ### Stress test
 Uncomment `STRESS_TEST` to activate the stress test code.
