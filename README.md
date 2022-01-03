@@ -57,7 +57,7 @@ The last field lets you enter the URL from which network time is obtained. By de
 
 Once configuration is done, the clock will start ticking. If necessary, it will also start fast ticking clockwise or anticlockwise to catch up with the network time. After that, it simply behaves like a normal clock but will adjust to daylight saving automatically.
 
-### Connecting to WiFi hotspot with Android 11 and above
+### Connecting to WiFi hotspot with Android 11+
 One annoying thing about Android 11 and above is that if you try to connect to a hotspot that has no Internet connectivity, it will automatically switch you over to another hotspot with connectivity very quickly. There is insufficient time to perform the configuration.
 
 A workaround is to switch the phone to airplane mode, then manually enable WiFi and connect to the hotspot. The automatic switching of hotspot will be disabled under this scenario.
