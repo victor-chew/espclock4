@@ -409,7 +409,7 @@ enum {
 /**
  * R0 = R0 + ADC reading from GPIO32
  */
-#define X_ADC_HELPER() \
+#define __X_ADC_SUM() \
     I_ADC(R1, 0, VDD_CHANNEL), \
     I_ADDR(R0, R0, R1)
 
@@ -419,14 +419,14 @@ enum {
  */
 #define X_ADC_SUM() \
     I_MOVI(R0, 0), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER(), \
-    X_ADC_HELPER()
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM(), \
+    __X_ADC_SUM()
 
 /*
  * Toggle value of VAR_TICKPIN between 0 and 1
@@ -437,103 +437,6 @@ enum {
     I_ADDI(R2, R2, 1), \
     I_ANDI(R2, R2, 1), \
     X_RTC_SETR(VAR_TICKPIN, R2)
-
-/**
- * Generate a 100us forward tick PWM on tickpin 1
- */
-#define X_NORM_TICKPIN1() \
-    X_GPIO_SET(TICKPIN1, 1), \
-    I_DELAY(NORM_TICK_ON_US*8), \
-    X_GPIO_SET(TICKPIN1, 0), \
-    I_DELAY((100-NORM_TICK_ON_US)*8)
-
-/**
- * Generate a 100us forward tick PWM on tickpin 2
- */
-#define X_NORM_TICKPIN2() \
-    X_GPIO_SET(TICKPIN2, 1), \
-    I_DELAY(NORM_TICK_ON_US*8), \
-    X_GPIO_SET(TICKPIN2, 0), \
-    I_DELAY((100-NORM_TICK_ON_US)*8)
-
-/**
- * Generate a 100us forward tick PWM on tickpin 1
- */
-#define X_FWD_TICKPIN1() \
-    X_GPIO_SET(TICKPIN1, 1), \
-    I_DELAY(FWD_TICK_ON_US*8), \
-    X_GPIO_SET(TICKPIN1, 0), \
-    I_DELAY((100-FWD_TICK_ON_US)*8)
-
-/**
- * Generate a 100us forward tick PWM on tickpin 2
- */
-#define X_FWD_TICKPIN2() \
-    X_GPIO_SET(TICKPIN2, 1), \
-    I_DELAY(FWD_TICK_ON_US*8), \
-    X_GPIO_SET(TICKPIN2, 0), \
-    I_DELAY((100-FWD_TICK_ON_US)*8)
-
-/**
- * Generate a 100us reverse tick PWM on tickpin 2
- */
-#define X_REV_TICKPIN1() \
-    X_GPIO_SET(TICKPIN1, 1), \
-    I_DELAY(REV_TICKA_ON_US*8), \
-    X_GPIO_SET(TICKPIN1, 0), \
-    I_DELAY((100-REV_TICKA_ON_US)*8)
-
-/**
- * Generate a 100us reverse tick PWM on tickpin 2
- */
-#define X_REV_TICKPIN2() \
-    X_GPIO_SET(TICKPIN2, 1), \
-    I_DELAY(REV_TICKA_ON_US*8), \
-    X_GPIO_SET(TICKPIN2, 0), \
-    I_DELAY((100-REV_TICKA_ON_US)*8)
-
-/**
- * Generate a 100us reverse tick PWM on tickpin 2
- */
-#define X_REV_TICKPIN1_B() \
-    X_GPIO_SET(TICKPIN1, 1), \
-    I_DELAY(REV_TICKB_ON_US*8), \
-    X_GPIO_SET(TICKPIN1, 0), \
-    I_DELAY((100-REV_TICKB_ON_US)*8)
-
-/**
- * Generate a 100us reverse tick PWM on tickpin 2
- */
-#define X_REV_TICKPIN2_B() \
-    X_GPIO_SET(TICKPIN2, 1), \
-    I_DELAY(REV_TICKB_ON_US*8), \
-    X_GPIO_SET(TICKPIN2, 0), \
-    I_DELAY((100-REV_TICKB_ON_US)*8)
-
-/**
- * Helper function for X_PWM() 
- */
-#define __X_PWM(tickpin, time, marker) \
-    I_MOVI(R0, time), \
-  M_LABEL(marker), \
-    I_STAGE_RST(), \
-  M_LABEL(marker+LBL_MARKER_NEXT), \
-    X_##tickpin(), \
-    I_STAGE_INC(1), \
-    M_BSLT(marker+LBL_MARKER_NEXT, 10), \
-    I_SUBI(R0, R0, 1), \
-    M_BGE(marker, 1)
-
-/**
- * Generate a PWM waveform of a certain length of time.
- * Uses R0 for operation
- * - tickpin: FWD_TICKPIN1, FWD_TICKPIN2, REV_TICKPIN1, REV_TICKPIN1
- * - time: length in msecs
- */
-#define X_PWM(tickpin, time) \
-    __X_PWM(tickpin, time, LBL_MARKER+__LINE__)
-
-
 
 /**
  *  Helper function for __X_TICK()

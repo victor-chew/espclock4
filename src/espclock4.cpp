@@ -478,7 +478,7 @@ void setup() {
         init_gpio();
         _set(VAR_CLK_SS, 4);
         _set(VAR_SLEEP_COUNT, 12*60*60);
-        _set(VAR_TICK_ACTION, TICK_FWD);
+        _set(VAR_TICK_ACTION, TICK_NORMAL);
         _set(VAR_TICK_DELAY, 5);
         while(digitalRead(RESETBTN_PIN_GPIO) == HIGH);
         break;
