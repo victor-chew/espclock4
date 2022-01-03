@@ -244,3 +244,5 @@ The RTC_SLOW_CLK drift can be dramatically improved by [connecting an external 3
 
 Programming the ULP coprocessor using assembly is tedious and error-prone. In the future, I might like to try using the ULP-RISC-V coprocessor on the ESP32-S2, which can be programmed with C. However, I would have to wait for support to become available in the Arduino framework before I can proceed.
 
+### References
+- [Project diary](https://www.randseq.org/search/label/espclock4)
