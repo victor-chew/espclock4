@@ -112,15 +112,15 @@ In `ulpdefs.h`, a file `clockXXX.h` is included eg. `clock20cm.h`. This file con
 	#define DIFF_THRESHOLD_MM       0
 	#define DIFF_THRESHOLD_SS       2
 
-In theory, this is how things work. The ULP is called every 125ms, 8x per sec. But the ULP timer does not work like a timer interrupt. A timer value is set via `ulp_set_wakeup_period()`. When the timer counts down to 0, ULP code is executed. When ULP code finishes execution via `I_HAIT()`, the timer value counts down again from the original set value. Hence the timer does not include the ULP execution time. If the timer value is 125ms, and ULP code takes 10ms to execution, the ULP code will actually execute at 135ms interval.
+In theory, this is how things work. The ULP is called every 125ms, 8x per sec. But the ULP timer does not work like a timer interrupt with hard deadlines. Instead, a timer value is set via `ulp_set_wakeup_period()`. When the timer counts down to 0, ULP code is executed. When ULP code finishes execution via `I_HAIT()`, the timer value counts down again from the original set value. Hence the timer does not include the ULP execution time. If the timer value is 125ms, and ULP code takes 10ms to execution, the ULP code will actually execute at 135ms interval.
 
 So what I did was to allocate 60ms for the ULP code (`MAX_PULSE_MS`), leaving 65ms for the ULP timer (`DEF_ULP_TIMER`). If the ULP code takes less than 60ms to execute, it will call the `X_DELAY_MS()` macro to wait out the remaining time before calling `I_HAIT()`. So for example, if the forward tick cycle takes 32ms to execute, then it will wait out 60ms - 32ms = 28ms before calling `I_HALT()`. This value is precalculated in `FWD_TICK_FILLER_MS` for the forward tick example.
 
 Note that this is still an approximation of the amount of time taken by the code, because I am not doing cycle counting for the code path. During each call of the ULP code, besides certain mandatory tasks (eg. check supply voltage, check reset button etc.), it decides on 1 of 3 clock actions to take: normal tick (1 tick per sec), fast-forward (up to 8 ticks per sec, decided by `FWD_COUNT_MASK`), fast-reverse (up to 4 ticks per sec, decided by `REV_COUNT_MASK`). Based on the action performed, the corresponding padding time will be used for the wait-out (`NORM_TICK_FILLER_MS`, `FWD_TICK_FILLER_MS`, `REV_TICKA_FILLER_MS`, `REV_TICKB_FILLER_MS`).
 
-The 65ms ULP timer will be calibrated every 2 hours based on the difference between the clock and network time. This makes the 5% timer drift more bearable.
+The 65ms ULP timer will be calibrated every 2 hours based on the difference between the clock and network time. This makes the 5% timer drift more bearable, and also help to account for the average additional time taken by the code paths.
 
-The reason why there are 2 fast-reverse filler types is because on my 20cm clock, I found that between the 7 to 11 region, a little more power (90% duty cycle versus 82% duty cycle) is required to get the second hand to reverse reliably. However, the same 90% duty cycle applied to the region between 1 and 4 region will cause some skipping). Hence, I split the reverse cycle in 2 regions. If the second hand is between `REV_TICKA_LO (35)` and `REV_TICKA_HI (55)`, `REV_TICKA` values will be used. Otherwise `REV_TICKB` values will be used.
+The reason why there are 2 fast-reverse filler types is because on my 20cm clock, I found that between the 7 to 11 region, a little more power (90% duty cycle versus 82% duty cycle) is required to get the second hand to reverse reliably. However, the same 90% duty cycle applied to the region between 1 and 4 will cause some skipping). Hence, I split the fast-reverse cycle into 2 regions. If the second hand is between `REV_TICKA_LO (35)` and `REV_TICKA_HI (55)`, `REV_TICKA` values will be used. Otherwise `REV_TICKB` values will be used.
 
 Note that on my 30cm clock, this issue is not present. Hence, `REV_TICKA` and `REV_TICKB` values are the same.
 
@@ -167,7 +167,7 @@ Fast-forward ticking should also be quite easy to tune. Typically, a little more
 	#define FWD_TICK_ON_US          60      // Duty cycle of forward tick pulse (out of 100us)
 	#define FWD_COUNT_MASK          1       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
 
-Fast-reverse is the most finicky to tune. Not only are there more parameters, different regions (typically at the 3 and 9 regions) may require different treatment, so it is not for the impatient!
+Fast-reverse is the most finicky to tune. Not only are there more parameters, different clock regions (typically at the 3 and 9 regions) may require different treatment, so it is not for the impatient!
 
 	#define REV_TICKA_LO            35      // REV_TICKA_LO <= second hand < REV_TICKA_HI will use REV_TICKA_* parameters
 	#define REV_TICKA_HI            55      //   Otherwise, REV_TICKA_* parameters will be used
@@ -233,6 +233,11 @@ This takes advantage of the fact that `I_DELAY()` translates into the `WAIT` ins
 	4000 xxxx
 
 where `xxxx` is the 16-bit value for the number of cycles to wait.
+
+### Clock Synchronization
+In ESPCLOCK4, during the clock synchronization operation every 2 hours, an error margin of up to 30s is permitted unlike previous versions. This reduces the need to fast-forward or fast-reverse to sync up the clock drastically. The ULP timer value will still be adjusted, and since the timer drift is somewhat random, it is likely during the next synchronization interval, the error margin would be reduced. 
+
+In summary, the clock may be up to 30s ahead or behind, and the ULP code will not take any action to effect an exact match.
 
 ### Future Work
 The RTC_SLOW_CLK drift can be dramatically improved by [connecting an external 32K crystal](https://www.esp32.com/viewtopic.php?t=1175&start=10) to the 32K_XP and 32K_XN pins of the ESP32. However, the [ESP32 Arduino Core](https://github.com/espressif/arduino-esp32) will need to be recompiled in order to use the external crystal, as there is currently no way to achieve this programmtically.
