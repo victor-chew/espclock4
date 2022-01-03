@@ -202,8 +202,40 @@ The `DIFF_THRESHOLD` parameters can be determined by running the `threshold.py` 
 
 The program will then generate a threshold value that will help the ULP to decide whether to use fast-forward or fast-reverse for clock sync for any particular clock-network-time-pair.
 
+### Calibrating I_DELAY timing
+The `I_DELAY()` macro is used in ULP code to perform various delay operations eg. when generating PWM. Since the ULP uses the onboard 8MHz clock, each cycle is 1/8,000,0000 = 0.125us. So `I_DELAY(8000)` gives a 1ms delay.
+
+However, the 8MHz clock is not exactly that, so we need to find out exactly what frequency it is running at. Once we have that, we can calculate the exact cycle time and adjust all the I_DELAY parameters to match the desired time. For example, `I_DELAY(8000)` may be adjust to `I_DELAY(8100)` so that it will delay for closer to the desired 1ms interval.
+
+To do that, the following code is used in `espclock4.cpp`:
+
+	// Calibrate 8M/256 clock against XTAL and patch up I_DELAY() instructions with recalibrated values
+	uint32_t rtc_8md256_period;
+	while(true) {
+		rtc_8md256_period = rtc_clk_cal(RTC_CAL_8MD256, 100);
+		if (rtc_8md256_period > 0) break;
+		debug("load_and_run_ulp: rtc_clk_cal() timed out");
+		delay(500);
+	}
+	uint32_t rtc_fast_freq_hz = 1000000ULL * (1 << RTC_CLK_CAL_FRACT) * 256 / rtc_8md256_period;
+	uint32_t ulp_cycles_1ms = round((1.0/1000)/(1.0/rtc_fast_freq_hz));
+	for (int i=0; i<size; i++) {
+		int old_inst = RTC_SLOW_MEM[ULP_PROG_START+i];
+		if ((old_inst & 0xffff0000) == 0x40000000) {
+			int interval = old_inst & 0x0000ffff;
+			interval *= ulp_cycles_1ms / 8000.0;
+			RTC_SLOW_MEM[ULP_PROG_START+i] = 0x40000000 | interval; 
+		}
+	}
+
+This takes advantage of the fact that `I_DELAY()` translates into the `WAIT` instruction, which takes the form:
+
+	4000 xxxx
+
+where `xxxx` is the 16-bit value for the number of cycles to wait.
+
 ### Future Work
 The RTC_SLOW_CLK drift can be dramatically improved by [connecting an external 32K crystal](https://www.esp32.com/viewtopic.php?t=1175&start=10) to the 32K_XP and 32K_XN pins of the ESP32. However, the [ESP32 Arduino Core](https://github.com/espressif/arduino-esp32) will need to be recompiled in order to use the external crystal, as there is currently no way to achieve this programmtically.
 
-Programming the ULP coprocessor using assembly is tedious and error-prone. In the future, I might like to try using the ULP-RISC-V coprocessor on the ESP32-S2, which should support using the C language. However, I would have to wait for support to drop on the Arduino framework before I can proceed.
+Programming the ULP coprocessor using assembly is tedious and error-prone. In the future, I might like to try using the ULP-RISC-V coprocessor on the ESP32-S2, which can be programmed with C. However, I would have to wait for support to become available in the Arduino framework before I can proceed.
 
