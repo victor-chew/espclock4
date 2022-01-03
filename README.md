@@ -195,8 +195,8 @@ Then the clock will only use fast-forwarding for synchronization.
 
 The `DIFF_THRESHOLD` parameters can be determined by running the `threshold.py` Python code. The following values need to be set:
 
-  fwd_speedup = 4
-  rev_speedup = 2
+	fwd_speedup = 4
+	rev_speedup = 2
 
 The program will then generate a threshold value that will help the ULP to decide whether to use fast-forward or fast-reverse for clock sync for any particular clock-network-time-pair.
 
