@@ -84,7 +84,7 @@ Note that if the ESP32 is unable to connect to the Internet for an extended peri
 ### Calibration
 To drive the clock clockwise and anti-clockwise, the following pulse patterns are used:
 
-![ESPClock4 clock pulse patterns](https://github.com/victor-chew/espclock4/raw/main/images/forward-and-reverse-pulses.png
+![ESPClock4 clock pulse patterns](https://github.com/victor-chew/espclock4/raw/main/images/forward-and-reverse-pulses.png)
 
 Because the clock is designed to work with ~1.5V, and ESP32 outputs 3.3V, we use pulse width modulation (PWN) to reduce the effective voltage applied to the clock's Lavet motor pins. 
 
