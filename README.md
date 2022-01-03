@@ -40,7 +40,7 @@ Two clocks have been made so far.
 ![30cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-front.jpg)
 ![30cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-back.jpg)
 
-### Configuration
+### Usage
 The user interface has not changed much from previous versions. 
 
 When the clock is first started, the built-in LED turns on to indicate that it is ready to be configured. Configuration is done via a captive WiFi portal spun up by the ESP32. Connecting to the captive portal brings up the web browser with the following configuration page:
