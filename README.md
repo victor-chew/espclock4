@@ -13,10 +13,10 @@ The ULP timer (RTC_SLOW_CLK) is used to keep time. Since this clock is not very 
 The advantages of this approach are as follows:
 
 - Very easy to implement, simple enough for a prototype board. You only need the following components:
-	- 1 x ESP32 D1 Mini dev board
-	- 1 x 0.47F supercap
-	- 1 x pushbutton
-	- 2 x resistors to form a divider to measure the input voltage
+  - 1 x ESP32 D1 Mini dev board
+  - 1 x 0.47F supercap
+  - 1 x pushbutton
+  - 2 x resistors to form a divider to measure the input voltage
 
 - Similar or better power efficiency compared to V3. A set of 4 x 1.2V AA NiMH rechargables will drive the clock for at least 4 months.
 
@@ -90,27 +90,27 @@ Because the clock is designed to work with ~1.5V, and ESP32 outputs 3.3V, we use
 
 In `ulpdefs.h`, a file `clockXXX.h` is included eg. `clock20cm.h`. This file contains all the operational parameters specific to the clock.
 
-	#define SUPPLY_VLOW							3100		// 4xAA = 4200; 18650 = 3100
-	#define NORM_TICK_MS						31			// Length of forward tick pulse in msecs
-	#define NORM_TICK_ON_US					60			// Duty cycle of forward tick pulse (out of 100us)
-	#define NORM_COUNT_MASK					7				// 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
-	#define FWD_TICK_MS							32			// Length of forward tick pulse in msecs
-	#define FWD_TICK_ON_US					60			// Duty cycle of forward tick pulse (out of 100us)
-	#define FWD_COUNT_MASK					1				// 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
-	#define REV_TICKA_LO						35			// REV_TICKA_LO <= second hand < REV_TICKA_HI will use REV_TICKA_* parameters
-	#define REV_TICKA_HI						55			//	 Otherwise, REV_TICKA_* parameters will be used
-	#define REV_TICKA_T1_MS					10			// Length of reverse tick short pulse in msecs
-	#define REV_TICKA_T2_MS					7				// Length of delay before reverse tick long pulse in msecs
-	#define REV_TICKA_T3_MS					28			// Length of reverse tick long pulse in msecs
-	#define REV_TICKA_ON_US					90			// Duty cycle of reverse tick pulse in usec (out of 100usec)
-	#define REV_TICKB_T1_MS					10			// Length of reverse tick short pulse in msecs
-	#define REV_TICKB_T2_MS					7				// Length of delay before reverse tick long pulse in msecs
-	#define REV_TICKB_T3_MS					28			// Length of reverse tick long pulse in msecs
-	#define REV_TICKB_ON_US					82			// Duty cycle of reverse tick pulse in usec (out of 100usec)
-	#define REV_COUNT_MASK					3				// 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
-	#define DIFF_THRESHOLD_HH				6				// If diff(clock time, network time) < threshold, fastforward; else reverse
-	#define DIFF_THRESHOLD_MM				0
-	#define DIFF_THRESHOLD_SS				2
+  #define SUPPLY_VLOW             3100    // 4xAA = 4200; 18650 = 3100
+  #define NORM_TICK_MS            31      // Length of forward tick pulse in msecs
+  #define NORM_TICK_ON_US         60      // Duty cycle of forward tick pulse (out of 100us)
+  #define NORM_COUNT_MASK         7       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
+  #define FWD_TICK_MS             32      // Length of forward tick pulse in msecs
+  #define FWD_TICK_ON_US          60      // Duty cycle of forward tick pulse (out of 100us)
+  #define FWD_COUNT_MASK          1       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
+  #define REV_TICKA_LO            35      // REV_TICKA_LO <= second hand < REV_TICKA_HI will use REV_TICKA_* parameters
+  #define REV_TICKA_HI            55      //   Otherwise, REV_TICKA_* parameters will be used
+  #define REV_TICKA_T1_MS         10      // Length of reverse tick short pulse in msecs
+  #define REV_TICKA_T2_MS         7       // Length of delay before reverse tick long pulse in msecs
+  #define REV_TICKA_T3_MS         28      // Length of reverse tick long pulse in msecs
+  #define REV_TICKA_ON_US         90      // Duty cycle of reverse tick pulse in usec (out of 100usec)
+  #define REV_TICKB_T1_MS         10      // Length of reverse tick short pulse in msecs
+  #define REV_TICKB_T2_MS         7       // Length of delay before reverse tick long pulse in msecs
+  #define REV_TICKB_T3_MS         28      // Length of reverse tick long pulse in msecs
+  #define REV_TICKB_ON_US         82      // Duty cycle of reverse tick pulse in usec (out of 100usec)
+  #define REV_COUNT_MASK          3       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
+  #define DIFF_THRESHOLD_HH       6       // If diff(clock time, network time) < threshold, fastforward; else reverse
+  #define DIFF_THRESHOLD_MM       0
+  #define DIFF_THRESHOLD_SS       2
 
 In theory, this is how things work. The ULP is called every 125ms, 8x per sec. But the ULP timer does not work like a timer interrupt. A timer value is set via `ulp_set_wakeup_period()`. When the timer counts down to 0, ULP code is executed. When ULP code finishes execution via `I_HAIT()`, the timer value counts down again from the original set value. Hence the timer does not include the ULP execution time. If the timer value is 125ms, and ULP code takes 10ms to execution, the ULP code will actually execute at 135ms interval.
 
@@ -128,76 +128,75 @@ The stress test basically performs a 12-hour tick test of the second hand in a p
 
 First, if you are performing a fast-reverse test, the second hand position must be set in the code:
 
-	case ESP_SLEEP_WAKEUP_UNDEFINED: {
-		init_vars(); 
-		init_gpio();
-		_set(VAR_CLK_SS, 4); // Set second hand position here (0-59)
-		_set(VAR_SLEEP_COUNT, 12*60*60);
-		_set(VAR_TICK_ACTION, TICK_NORMAL);
-		_set(VAR_TICK_DELAY, 5);
-		while(digitalRead(RESETBTN_PIN_GPIO) == HIGH);
-		break;
+  case ESP_SLEEP_WAKEUP_UNDEFINED:
+    init_vars(); 
+    init_gpio();
+    _set(VAR_CLK_SS, 4); // Set second hand position here (0-59)
+    _set(VAR_SLEEP_COUNT, 12*60*60);
+    _set(VAR_TICK_ACTION, TICK_NORMAL);
+    _set(VAR_TICK_DELAY, 5);
+    while(digitalRead(RESETBTN_PIN_GPIO) == HIGH);
+    break;
 
 Then, specifying the direction of test (`TICK_NORMAL`, `TICK_FWD`, `TICK_REV`):
 
-      case ESP_SLEEP_WAKEUP_ULP: {
-        delay(5000);
-        int randnum = random(1,6)*5;
-        int count = _get(VAR_SLEEP_COUNT);
-        while(count == 0) delay(60000);
-        if (randnum >= count) randnum = count;
-        _set(VAR_SLEEP_COUNT, count - randnum);
-        _set(VAR_TICK_ACTION, TICK_REV); // Set direction here (TICK_NORMAL, TICK_FWD, TICK_REV)
-        _set(VAR_TICK_DELAY, randnum); 
-        _set(VAR_PAUSE_CLOCK, 0);
-        break;
-      }
+	case ESP_SLEEP_WAKEUP_ULP:
+		delay(5000);
+		int randnum = random(1,6)*5;
+		int count = _get(VAR_SLEEP_COUNT);
+		while(count == 0) delay(60000);
+		if (randnum >= count) randnum = count;
+		_set(VAR_SLEEP_COUNT, count - randnum);
+		_set(VAR_TICK_ACTION, TICK_REV); // Set direction here (TICK_NORMAL, TICK_FWD, TICK_REV)
+		_set(VAR_TICK_DELAY, randnum); 
+		_set(VAR_PAUSE_CLOCK, 0);
+		break;
 
 Finally, compile and run. The clock will wait for you to press the reset button, then it will tick normally 5 times. This is to make sure the pin polarity are sorted out before the test is started (i.e. because we always start with pulsing pin 1, there is a likelihood we will miss the first tick if pin 2 is supposed to be pulsed first. However, this will possibly lead to a major slippage if we start fast-reverse on the wrong pin). Then the clock will pause for 5s (note the second hand position now) and start the 12-hour test. It will tick in the chosen direction for random number of ticks (between 5s to 25s) each time, pause for 5s and continue until exactly 12*60*60 ticks are made. The random number of ticks each time will test reliability issues when the second hand starts from different positions, which it is extremely sensitive for fast-reverse. If all goes well, the second hand should return to the original position.
 
 Normal ticking should be easy to tune, since the default value 31ms should be standard for all analog clocks, and the only thing that you might like to tune is the duty cycle `NORM_TICK_ON_US`. The lower the value, the less power will be used for normal ticking (which is what the clock will be doing most of the time). 
 
-	#define NORM_TICK_MS						31			// Length of forward tick pulse in msecs
-	#define NORM_TICK_ON_US					60			// Duty cycle of forward tick pulse (out of 100us)
+  #define NORM_TICK_MS            31      // Length of forward tick pulse in msecs
+  #define NORM_TICK_ON_US         60      // Duty cycle of forward tick pulse (out of 100us)
 
 Fast-forward ticking should also be quite easy to tune. Typically, a little more power is required (either by increasing the pulse width `FWD_TICK_MS`, or by increasing the PWM duty cycle `FWD_TICK_ON_US`. In the case of my 20cm clock, I find that I am unable to get reliable fast-forward operation at 8 ticks/sec, so I have to lower it to 4 ticks/sec. This did not happen for my 30cm clock). 
 
-	#define FWD_TICK_MS							32			// Length of forward tick pulse in msecs
-	#define FWD_TICK_ON_US					60			// Duty cycle of forward tick pulse (out of 100us)
-	#define FWD_COUNT_MASK					1				// 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
+  #define FWD_TICK_MS             32      // Length of forward tick pulse in msecs
+  #define FWD_TICK_ON_US          60      // Duty cycle of forward tick pulse (out of 100us)
+  #define FWD_COUNT_MASK          1       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
 
 Fast-reverse is the most finicky to tune. Not only are there more parameters, different regions (typically at the 3 and 9 regions) may require different treatment, so it is not for the impatient!
 
-	#define REV_TICKA_LO						35			// REV_TICKA_LO <= second hand < REV_TICKA_HI will use REV_TICKA_* parameters
-	#define REV_TICKA_HI						55			//	 Otherwise, REV_TICKA_* parameters will be used
-	#define REV_TICKA_T1_MS					10			// Length of reverse tick short pulse in msecs
-	#define REV_TICKA_T2_MS					7				// Length of delay before reverse tick long pulse in msecs
-	#define REV_TICKA_T3_MS					28			// Length of reverse tick long pulse in msecs
-	#define REV_TICKA_ON_US					90			// Duty cycle of reverse tick pulse in usec (out of 100usec)
-	#define REV_TICKB_T1_MS					10			// Length of reverse tick short pulse in msecs
-	#define REV_TICKB_T2_MS					7				// Length of delay before reverse tick long pulse in msecs
-	#define REV_TICKB_T3_MS					28			// Length of reverse tick long pulse in msecs
-	#define REV_TICKB_ON_US					82			// Duty cycle of reverse tick pulse in usec (out of 100usec)
-	#define REV_COUNT_MASK					3				// 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
+  #define REV_TICKA_LO            35      // REV_TICKA_LO <= second hand < REV_TICKA_HI will use REV_TICKA_* parameters
+  #define REV_TICKA_HI            55      //   Otherwise, REV_TICKA_* parameters will be used
+  #define REV_TICKA_T1_MS         10      // Length of reverse tick short pulse in msecs
+  #define REV_TICKA_T2_MS         7       // Length of delay before reverse tick long pulse in msecs
+  #define REV_TICKA_T3_MS         28      // Length of reverse tick long pulse in msecs
+  #define REV_TICKA_ON_US         90      // Duty cycle of reverse tick pulse in usec (out of 100usec)
+  #define REV_TICKB_T1_MS         10      // Length of reverse tick short pulse in msecs
+  #define REV_TICKB_T2_MS         7       // Length of delay before reverse tick long pulse in msecs
+  #define REV_TICKB_T3_MS         28      // Length of reverse tick long pulse in msecs
+  #define REV_TICKB_ON_US         82      // Duty cycle of reverse tick pulse in usec (out of 100usec)
+  #define REV_COUNT_MASK          3       // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec
 
 You may wish to disable reverse ticking altogether by changing the following definitions in `ulpdefs.h`:
 
-	#define DIFF_THRESHOLD_HH				6
-	#define DIFF_THRESHOLD_MM				0
-	#define DIFF_THRESHOLD_SS				2
+  #define DIFF_THRESHOLD_HH       6
+  #define DIFF_THRESHOLD_MM       0
+  #define DIFF_THRESHOLD_SS       2
 
 to
 
-	#define DIFF_THRESHOLD_HH				12
-	#define DIFF_THRESHOLD_MM				0
-	#define DIFF_THRESHOLD_SS				0
+  #define DIFF_THRESHOLD_HH       12
+  #define DIFF_THRESHOLD_MM       0
+  #define DIFF_THRESHOLD_SS       0
 
 Then the clock will only use fast-forwarding for synchronization.
 
 The `DIFF_THRESHOLD` parameters can be determined by running the `threshold.py` Python code. The following values need to be set:
 
-	fwd_speedup = 4
-	rev_speedup = 2
+  fwd_speedup = 4
+  rev_speedup = 2
 
 The program will then generate a threshold value that will help the ULP to decide whether to use fast-forward or fast-reverse for clock sync for any particular clock-network-time-pair.
 
