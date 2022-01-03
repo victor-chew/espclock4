@@ -118,6 +118,8 @@ So what I did was to allocate 60ms for the ULP code (`MAX_PULSE_MS`), leaving 65
 
 Note that this is still an approximation of the amount of time taken by the code, because I am not doing cycle counting for the code path. During each call of the ULP code, besides certain mandatory tasks (eg. check supply voltage, check reset button etc.), it decides on 1 of 3 clock actions to take: normal tick (1 tick per sec), fast-forward (up to 8 ticks per sec, decided by `FWD_COUNT_MASK`), fast-reverse (up to 4 ticks per sec, decided by `REV_COUNT_MASK`). Based on the action performed, the corresponding padding time will be used for the wait-out (`NORM_TICK_FILLER_MS`, `FWD_TICK_FILLER_MS`, `REV_TICKA_FILLER_MS`, `REV_TICKB_FILLER_MS`).
 
+The 65ms ULP timer will be calibrated every 2 hours based on the difference between the clock and network time. This makes the 5% timer drift more bearable.
+
 The reason why there are 2 fast-reverse filler types is because on my 20cm clock, I found that between the 7 to 11 region, a little more power (90% duty cycle versus 82% duty cycle) is required to get the second hand to reverse reliably. However, the same 90% duty cycle applied to the region between 1 and 4 region will cause some skipping). Hence, I split the reverse cycle in 2 regions. If the second hand is between `REV_TICKA_LO (35)` and `REV_TICKA_HI (55)`, `REV_TICKA` values will be used. Otherwise `REV_TICKB` values will be used.
 
 Note that on my 30cm clock, this issue is not present. Hence, `REV_TICKA` and `REV_TICKB` values are the same.
