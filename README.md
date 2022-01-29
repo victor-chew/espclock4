@@ -30,15 +30,15 @@ The advantages of this approach are as follows:
 ### Makes
 Two clocks have been made so far.
 
-- **20cm clock ($2)**:
+- **25cm clock ($2)**:
 
-![20cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-20cm-front.jpg)
-![20cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-20cm-back.jpg)
+![25cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-25cm-front.jpg)
+![25cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-25cm-back.jpg)
 
-- **30cm clock ($10)**:
+- **38cm clock ($10)**:
 
-![30cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-front.jpg)
-![30cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-30cm-back.jpg)
+![38cm clock front](https://github.com/victor-chew/espclock4/raw/main/images/clock-38cm-front.jpg)
+![38cm clock back](https://github.com/victor-chew/espclock4/raw/main/images/clock-38cm-back.jpg)
 
 ### Usage
 The user interface has not changed much from previous versions. 
