@@ -30,7 +30,7 @@
 esp_err_t patched_ulp_process_macros_and_load(uint32_t load_addr, const ulp_insn_t* program, size_t* psize);
 
 // Constants
-#include "clock25cm.h"
+#include "clock38cm.h"
 #define ULP_PROG_START          200                               // ULP code starts here; region before this reserved for variables and stack
 #define ULP_CALL_PER_SEC        8                                 // Number of times ULP is called per sec
 #define TICKPIN1_GPIO           GPIO_NUM_25 

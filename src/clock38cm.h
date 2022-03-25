@@ -1,4 +1,4 @@
-#define SUPPLY_VLOW             4200                              // 4xAA = 4200; 18650 = 3100
+#define SUPPLY_VLOW             3100                              // 4xAA = 4200; 18650 = 3100
 #define NORM_TICK_MS            31                                // Length of forward tick pulse in msecs
 #define NORM_TICK_ON_US         60                                // Duty cycle of forward tick pulse (out of 100us)
 #define NORM_COUNT_MASK         7                                 // 0 = 8 ticks/sec, 1 = 4 ticks/sec, 3 = 2 ticks/sec, 7 = 1 tick /sec

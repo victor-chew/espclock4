@@ -432,8 +432,10 @@ void wakeup_ulp() {
       tune_ulp_timer();
       save_config();
       if (!WiFi.isConnected()) {
-        debug("WiFi disconnected; set sleep_interval to %d", 60);
-        _set(VAR_SLEEP_INTERVAL, 60);
+        debug("WiFi disconnected; temporarily reset sleep_interval to 5 mins");
+        _set(VAR_SLEEP_INTERVAL, TUNE_INTERVALS[0]);
+      } else {
+        _set(VAR_SLEEP_INTERVAL, TUNE_INTERVALS[_get(VAR_TUNE_LEVEL)]);
       }
       break;
     }
@@ -453,7 +455,10 @@ void wakeup_ulp() {
           delay(500);
           rtc_reset();
         } else {
-          if (init_wifi()) status_vars("Clocked paused");
+          if (init_wifi()) {
+            status2("Clocked paused C[%02d:%02d:%02d], N[%02d:%02d:%02d]", 
+             _get(VAR_CLK_HH), _get(VAR_CLK_MM), _get(VAR_CLK_SS), _get(VAR_NET_HH), _get(VAR_NET_MM), _get(VAR_NET_SS));
+          }
           _set(VAR_PAUSE_CLOCK, 2);
         }
       }
