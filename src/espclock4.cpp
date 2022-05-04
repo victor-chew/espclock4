@@ -32,7 +32,7 @@ AsyncWiFiManagerParameter form_timezone("timezone", "TZ database timezone code",
 AsyncWiFiManagerParameter form_scriptUrl("scriptUrl", "URL to ESPCLOCK script", buf_script_url, sizeof(buf_script_url)-1);
 
 #ifdef DEBUG 
-  void status_vars(const char* prefix) {
+  void debug_vars(const char* prefix) {
     debug("%s: wcause=%d, wreason=%d, ct=%02d:%02d:%02d, nt=%02d:%02d:%02d, pause_clock=%d, tickpin=%d, tick_action=%d, "
       "tick_delay=%d, sleep_count=%05d, sleep_interval=%05d, adc_vdd=%d, adc_vddl=%d, adc_vddh=%d, tune_level=%d, ulp_timer=%d, ulp_call_count=%d, dbg=%d",
       prefix, wake_cause, _get(VAR_WAKE_REASON), _get(VAR_CLK_HH), _get(VAR_CLK_MM), _get(VAR_CLK_SS), _get(VAR_NET_HH), _get(VAR_NET_MM), _get(VAR_NET_SS), 
@@ -41,7 +41,7 @@ AsyncWiFiManagerParameter form_scriptUrl("scriptUrl", "URL to ESPCLOCK script", 
     );
   }
 #else // !DEBUG
-  void status_vars(const char* prefix) {}
+  void debug_vars(const char* prefix) {}
 #endif // DEBUG
 
 // Application Javascript to be injected into WiFiManager's config page
@@ -107,7 +107,7 @@ void init_vars() {
   _set(VAR_ULP_TIMERL, LO_WORD(DEF_ULP_TIMER));
   _set(VAR_STACK_PTR, VAR_STACK_REGION);
   _set(VAR_ADC_VDDH, 4095);
-  for (uint16_t adc=2000; adc<4096; adc++) {
+  for (uint16_t adc=1000; adc<4096; adc++) {
     uint32_t v = adc_to_voltage(adc);
     if (_get(VAR_ADC_VDDL) == 0 && v >= SUPPLY_VLOW/2) _set(VAR_ADC_VDDL, adc);
     if (_get(VAR_ADC_VDDH) == 4095 && v >= SUPPLY_VHIGH/2) _set(VAR_ADC_VDDH, adc);
@@ -346,7 +346,7 @@ void tune_ulp_timer() {
     char prefix[512]; 
     sprintf(prefix, "tune_ulp_timer() aborted (mac=%s, old_nt=%02d:%02d:%02d, offset=%d, diff=%d)", 
       WiFi.macAddress().c_str(), nethh, netmm, netss, offset, diff);
-    status_vars(prefix);
+    debug_vars(prefix);
     return; // Do not adjust timer if net time is off by > 60secs
   }
   float multipler = (float)(_get(VAR_SLEEP_INTERVAL) + diff) / (_get(VAR_SLEEP_INTERVAL));
@@ -356,7 +356,7 @@ void tune_ulp_timer() {
     char prefix[512]; 
     sprintf(prefix, "tune_ulp_timer() update (mac=%s, old_nt=%02d:%02d:%02d, offset=%d, diff=%d, multiplier=%f, old_ulp_sleep=%d, new_ulp_sleep=%d)", 
       WiFi.macAddress().c_str(), nethh, netmm, netss, offset, diff, multipler, old_timer, new_timer);
-    status_vars(prefix);
+    debug_vars(prefix);
   }
   int tune_level = _get(VAR_TUNE_LEVEL);
   if (tune_level < (sizeof(TUNE_INTERVALS)/sizeof(int))-1) {
@@ -395,9 +395,9 @@ void startup() {
   if (_get(VAR_ADC_VDD) >= _get(VAR_ADC_VDDL)) {
     if (!FILESYS.exists(CONFIG_FILE)) {
       init_wifi();
-      status("startup(): factory reset");
+      debug("startup(): factory reset");
     } else {
-      status("startup(): normal");
+      debug("startup(): normal");
     }
     // Schedule net time update in 5s
     _set(VAR_UPDATE_PENDING, 5);
@@ -423,7 +423,7 @@ void wakeup_ulp() {
         bool rc = get_nettime();
         char prefix[64]; 
         sprintf(prefix, "Update nettime (rc=%d; old_nt=%02d:%02d:%02d)", rc, oldhh, oldmm, oldss);
-        status_vars(prefix);
+        debug_vars(prefix);
       }
       save_config();
       break;
@@ -456,7 +456,7 @@ void wakeup_ulp() {
           rtc_reset();
         } else {
           if (init_wifi()) {
-            status2("Clocked paused C[%02d:%02d:%02d], N[%02d:%02d:%02d]", 
+            status("Clocked paused C[%02d:%02d:%02d], N[%02d:%02d:%02d]", 
              _get(VAR_CLK_HH), _get(VAR_CLK_MM), _get(VAR_CLK_SS), _get(VAR_NET_HH), _get(VAR_NET_MM), _get(VAR_NET_SS));
           }
           _set(VAR_PAUSE_CLOCK, 2);
@@ -507,7 +507,7 @@ void setup() {
     switch(wake_cause) {
       case ESP_SLEEP_WAKEUP_UNDEFINED:
         startup();
-        status_vars("startup()");
+        debug_vars("startup()");
         break;
       case ESP_SLEEP_WAKEUP_ULP:
         wakeup_ulp();

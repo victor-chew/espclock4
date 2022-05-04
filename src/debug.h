@@ -16,15 +16,53 @@
  * limitations under the License.
  */
 
-#ifdef STATUS
+#ifdef DEBUG 
+
+  void init_debug() {
+    Serial.begin(115200);
+  }
+
+  void netdebug(const char *format, ...) {
+    WiFiUDP udpClient;
+    Syslog syslog(udpClient, "192.168.1.3", 514, getClockName(), "", LOG_KERN, SYSLOG_PROTO_BSD);
+
+    char buf[1024];
+    va_list ap;
+    va_start(ap, format);
+    vsnprintf(buf, sizeof(buf), format, ap);
+    va_end(ap);
+    
+    Serial.println(buf);
+
+    if (WiFi.status() == WL_CONNECTED) { 
+      syslog.log(buf); 
+      delay(500); 
+    }
+  }
+
+  void debug(const char *format, ...) {
+    char buf[300];
+    va_list ap;
+    va_start(ap, format);
+    vsnprintf(buf, sizeof(buf), format, ap);
+    va_end(ap);
+    Serial.println(buf);
+  }
+
+#else // !DEBUG
+
+  void init_debug() {}
+  void netdebug(const char *format, ...) {}
+  void debug(const char *format, ...) {}
+
+#endif // DEBUG
 
 #include <Syslog.h>
-
 char* getClockName();
 
 void status(const char *format, ...) {
   WiFiUDP udpClient;
-  Syslog syslog(udpClient, "192.168.1.2", 514, getClockName(), "", LOG_KERN, SYSLOG_PROTO_BSD);
+  Syslog syslog(udpClient, "192.168.1.3", 514, getClockName(), "", LOG_KERN, SYSLOG_PROTO_BSD);
 
   char buf[1024];
   va_list ap;
@@ -39,52 +77,3 @@ void status(const char *format, ...) {
     delay(500); 
   }
 }
-
-#else // !STATUS
-
-void status(const char *format, ...) {}
-
-#include <Syslog.h>
-char* getClockName();
-void status2(const char *format, ...) {
-  WiFiUDP udpClient;
-  Syslog syslog(udpClient, "192.168.1.2", 514, getClockName(), "", LOG_KERN, SYSLOG_PROTO_BSD);
-
-  char buf[1024];
-  va_list ap;
-  va_start(ap, format);
-  vsnprintf(buf, sizeof(buf), format, ap);
-  va_end(ap);
-  
-  Serial.println(buf);
-
-  if (WiFi.status() == WL_CONNECTED) { 
-    syslog.log(buf); 
-    delay(500); 
-  }
-}
-
-#endif // STATUS
-
-#ifdef DEBUG 
-
-void init_debug() {
-  Serial.begin(115200);
-}
-
-void debug(const char *format, ...) {
-  char buf[300];
-  va_list ap;
-  va_start(ap, format);
-  vsnprintf(buf, sizeof(buf), format, ap);
-  va_end(ap);
-  Serial.println(buf);
-}
-
-#else // !DEBUG
-
-void init_debug() {}
-void debug(const char *format, ...) {}
-
-#endif // DEBUG
-
